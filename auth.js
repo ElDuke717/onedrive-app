@@ -28,4 +28,12 @@ const getToken = async (authCode, redirectUri) => {
   return await cca.acquireTokenByCode(tokenRequest);
 };
 
-module.exports = { getAuthUrl, getToken };
+const refreshAccessToken = async (refreshToken) => {
+  const tokenRequest = {
+    refreshToken: refreshToken,
+    scopes: ["Files.Read", "Files.Read.All", "User.Read"],
+  };
+  return await cca.acquireTokenByRefreshToken(tokenRequest);
+};
+
+module.exports = { getAuthUrl, getToken, refreshAccessToken, cca };
