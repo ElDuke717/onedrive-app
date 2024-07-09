@@ -89,8 +89,7 @@ jspm_packages/
 # Nuxt build output
 .nuxt/
 
-# Hugo build output
-/public/
+
 
 # Temporary files
 tmp/
