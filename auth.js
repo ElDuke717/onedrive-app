@@ -67,6 +67,7 @@ async function refreshAccessToken(refreshToken) {
   return await cca.acquireTokenByRefreshToken(tokenRequest);
 }
 
+// Export the functions
 module.exports = {
   getAuthUrl,
   getToken,

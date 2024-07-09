@@ -4,13 +4,12 @@ This is a server-side Node.js application with a web interface that integrates w
 
 ## Features
 
-This application provides the following functionalities:
+This application does the following:
 
-1. Authenticate with Microsoft OneDrive
-2. List files and folders from the user's OneDrive
-3. Download files directly from OneDrive
+1. Authenticates with Microsoft OneDrive
+2. Lists files and folders from the user's OneDrive
+3. Downloads files directly from OneDrive
 4. Display users who have access to each file
-5. Update user access information
 
 ## Prerequisites
 
@@ -44,7 +43,7 @@ This application provides the following functionalities:
    SESSION_SECRET=your_session_secret
    ```
 
-   Replace the placeholders with your actual Azure app credentials and a secure random string for the session secret.
+   Replace the placeholders with your actual Azure app credentials and a secure random string for the session secret. These will be provided separately for the demo.
 
 4. Start the server:
 
@@ -79,7 +78,7 @@ This application provides the following functionalities:
 
 ## Loom Video
 
-[Link to the Loom video demonstrating the application]
+[Loom video demonstrating the application](https://www.loom.com/share/4bf6ef51528c4016a8d30dc0913884c4?sid=4270e68b-ede5-41ae-b6fe-087d26eee4ba)
 
 ## Future Enhancements
 

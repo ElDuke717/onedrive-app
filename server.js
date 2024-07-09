@@ -5,17 +5,16 @@
  * for the OneDrive application.
  */
 
-const crypto = require("crypto");
 const express = require("express");
 const helmet = require("helmet");
 const session = require("express-session");
 const { getAuthUrl, getToken } = require("./auth");
 const { listFiles, downloadFile, listUsersWithAccess } = require("./onedrive");
-const path = require('path');
+const path = require("path");
 const app = express();
 
 // Middleware setup
-app.use(helmet());
+app.use(helmet()); // Adds security headers, such as Content-Security-Policy
 app.use(express.static("public"));
 app.use(
   session({
@@ -34,9 +33,6 @@ app.use(
     },
   })
 );
-
-// Generate a random string to validate notifications
-const validationToken = crypto.randomBytes(32).toString("hex");
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
@@ -177,27 +173,9 @@ app.get("/check-updates", async (req, res) => {
   }
 });
 
-/**
- * Webhook endpoint for receiving change notifications.
- */
-app.post("/webhook", (req, res) => {
-  if (req.query.validationToken) {
-    res.set("Content-Type", "text/plain");
-    res.status(200).send(req.query.validationToken);
-  } else {
-    console.log("Change detected:", req.body);
-    if (req.body.clientState === validationToken) {
-      io.emit("fileChanged", req.body);
-      res.status(202).end();
-    } else {
-      res.status(401).end();
-    }
-  }
-});
-
 // Start the server
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
 
-module.exports = { validationToken };
+
