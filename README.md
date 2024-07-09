@@ -52,7 +52,8 @@ This application provides the following functionalities:
    npm start
    ```
 
-5. Open your web browser and navigate to `http://localhost:3000`
+5. Open your web browser and navigate to `http://localhost:3000/`
+6. Click the "Authenticate" button to log in with your Microsoft account.
 
 ## Usage
 

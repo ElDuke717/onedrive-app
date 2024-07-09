@@ -11,9 +11,8 @@ const helmet = require("helmet");
 const session = require("express-session");
 const { getAuthUrl, getToken } = require("./auth");
 const { listFiles, downloadFile, listUsersWithAccess } = require("./onedrive");
-
+const path = require('path');
 const app = express();
-
 
 // Middleware setup
 app.use(helmet());
@@ -38,6 +37,12 @@ app.use(
 
 // Generate a random string to validate notifications
 const validationToken = crypto.randomBytes(32).toString("hex");
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.use(express.static(path.join(__dirname, "public")));
 
 /**
  * Initiates the OAuth authentication process.
