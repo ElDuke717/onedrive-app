@@ -1,67 +1,88 @@
-const axios = require('axios');
+/**
+ * OneDrive API Integration Module
+ * 
+ * This module provides functions to interact with the Microsoft Graph API
+ * for OneDrive operations.
+ */
 
-const listFiles = async (accessToken) => {
+const axios = require("axios");
+
+// Microsoft Graph API endpoint
+const GRAPH_API_ENDPOINT = 'https://graph.microsoft.com/v1.0';
+
+/**
+ * Retrieves a list of files and folders from the root of the user's OneDrive.
+ * 
+ * @param {string} accessToken - The OAuth access token for authentication.
+ * @returns {Promise<Array>} A promise that resolves to an array of file and folder objects.
+ * @throws {Error} If there's an issue with the API request.
+ */
+async function listFiles(accessToken) {
     try {
-        const response = await axios.get('https://graph.microsoft.com/v1.0/me/drive/root/children', {
+        const response = await axios.get(`${GRAPH_API_ENDPOINT}/me/drive/root/children`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Accept': 'application/json'
             }
         });
-        return response.data.value; // Make sure we're returning the array of files
-    } catch (error) {
-        console.error('Error in listFiles:', error.response ? error.response.data : error.message);
-        throw error;
-    }
-};
-
-const downloadFile = async (accessToken, fileId) => {
-    try {
-        const response = await axios.get(`https://graph.microsoft.com/v1.0/me/drive/items/${fileId}/content`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            },
-            responseType: 'stream'
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error downloading file:', error);
-        throw error;
-    }
-};
-
-const listUsersWithAccess = async (accessToken, fileId) => {
-    try {
-        const response = await axios.get(`https://graph.microsoft.com/v1.0/me/drive/items/${fileId}/permissions`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Accept': 'application/json'
-            }
-        });
-        console.log(`Users with access to file ${fileId}:`, response.data);
         return response.data.value;
     } catch (error) {
-        console.error('Error in listUsersWithAccess:', error.response ? error.response.data : error.message);
+        console.error('Error in listFiles:', error.response?.data || error.message);
         throw error;
     }
-};
+}
 
-const createSubscription = async (accessToken, fileId) => {
+/**
+ * Downloads a specific file from OneDrive.
+ * 
+ * @param {string} accessToken - The OAuth access token for authentication.
+ * @param {string} fileId - The ID of the file to download.
+ * @returns {Promise<Stream>} A promise that resolves to a readable stream of the file content.
+ * @throws {Error} If there's an issue with the API request.
+ */
+async function downloadFile(accessToken, fileId) {
     try {
-      const response = await axios.post('https://graph.microsoft.com/v1.0/subscriptions', {
-        changeType: 'updated',
-        notificationUrl: 'https://YOUR_PUBLIC_URL/webhook',
-        resource: `/me/drive/items/${fileId}`,
-        expirationDateTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-        clientState: 'secretClientState'
-      }, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
-      return response.data;
+        const response = await axios.get(
+            `${GRAPH_API_ENDPOINT}/me/drive/items/${fileId}/content`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                responseType: "stream",
+            }
+        );
+        return response.data;
     } catch (error) {
-      console.error('Error creating subscription:', error);
-      throw error;
+        console.error("Error downloading file:", error.message);
+        throw error;
     }
-  };
+}
 
-module.exports = { listFiles, downloadFile, listUsersWithAccess };
+/**
+ * Retrieves a list of users who have access to a specific file.
+ * 
+ * @param {string} accessToken - The OAuth access token for authentication.
+ * @param {string} fileId - The ID of the file to check permissions for.
+ * @returns {Promise<Array>} A promise that resolves to an array of user permission objects.
+ * @throws {Error} If there's an issue with the API request.
+ */
+async function listUsersWithAccess(accessToken, fileId) {
+    try {
+        const response = await axios.get(`${GRAPH_API_ENDPOINT}/me/drive/items/${fileId}/permissions`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Accept': 'application/json'
+            }
+        });
+        return response.data.value;
+    } catch (error) {
+        console.error('Error in listUsersWithAccess:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+module.exports = {
+    listFiles,
+    downloadFile,
+    listUsersWithAccess
+};
