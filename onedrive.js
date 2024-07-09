@@ -68,13 +68,27 @@ async function downloadFile(accessToken, fileId) {
  */
 async function listUsersWithAccess(accessToken, fileId) {
     try {
-        const response = await axios.get(`${GRAPH_API_ENDPOINT}/me/drive/items/${fileId}/permissions`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Accept': 'application/json'
-            }
-        });
-        return response.data.value;
+        const [permissionsResponse, fileDetailsResponse] = await Promise.all([
+            axios.get(`${GRAPH_API_ENDPOINT}/me/drive/items/${fileId}/permissions`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Accept': 'application/json'
+                }
+            }),
+            axios.get(`${GRAPH_API_ENDPOINT}/me/drive/items/${fileId}`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Accept': 'application/json'
+                }
+            })
+        ]);
+
+        const owner = fileDetailsResponse.data.createdBy.user;
+        const otherUsers = permissionsResponse.data.value
+            .filter(permission => permission.grantedTo && permission.grantedTo.user)
+            .map(permission => permission.grantedTo.user);
+
+        return [owner, ...otherUsers];
     } catch (error) {
         console.error('Error in listUsersWithAccess:', error.response?.data || error.message);
         throw error;
